@@ -8,6 +8,16 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            if check_password_hash(user.password, password):
+                flash('Login successful', 'success')
+        flash('Incorrect email or password', 'error')
+
     return render_template("login.html")
 
 @auth.route('/logout')
@@ -22,7 +32,10 @@ def signup():
         password = request.form.get('password1')
         confirm_password = request.form.get('password2')
 
-        if len(email) < 4:
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash('Email already registered', 'error')
+        elif len(email) < 4:
             flash('Email is too short', 'error')
         elif len(first_name) < 2:
             flash('First name is too short', 'error')
