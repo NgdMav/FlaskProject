@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, current_user, logout_user
 
 from . import db
 from .models import User
@@ -21,7 +21,7 @@ def login():
                 return redirect(url_for('views.home'))
         flash('Incorrect email or password', 'error')
 
-    return render_template("login.html")
+    return render_template("login.html", user=current_user)
 
 @auth.route('/logout')
 @login_required
@@ -59,4 +59,4 @@ def signup():
             login_user(user, remember=True)
             return redirect(url_for('views.home'))
 
-    return render_template("signup.html")
+    return render_template("signup.html", user=current_user)
